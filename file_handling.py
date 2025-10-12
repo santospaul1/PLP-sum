@@ -1,44 +1,72 @@
 import os
 
-def process_and_count(input_filename="input.txt", output_filename="output.txt"):
+def file_transformer_lab():
     
-    print(f"Starting processing: Reading from '{input_filename}'...")
-
-    try:
-        # 1. Read the contents of input.txt
-        with open(input_filename, 'r') as infile:
-            original_content = infile.read()
-
-        if not original_content.strip():
-            print(f"Warning: The input file '{input_filename}' is empty.")
+    output_filename = "transformed_output.txt"
+    input_filename = ""
+    
+    while True:
+        # Ask the user for the input filename
+        input_filename = input("Enter the input filename (or type 'quit' to exit): ").strip()
+        
+        if input_filename.lower() == 'quit':
+            print("Exiting the file transformer lab. Goodbye!")
             return
 
-        # 2. Convert all text to uppercase
-        uppercase_content = original_content.upper()
-
-        # 3. Count the number of words in the file
+        print(f"\nAttempting to process '{input_filename}'...")
         
-        words = original_content.split()
-        word_count = len(words)
+        try:
+            #  Attempt to Read the File ---
+            
+            with open(input_filename, 'r', encoding='utf-8') as infile:
+                original_content = infile.read()
+            
+            # Simple Processing: convert content to uppercase
+            processed_content = original_content.upper()
+            
+            # Attempt to Write the File ---
+            # Prepare the final data to be written
+            line_count = processed_content.count('\n') + 1
+            word_count = len(processed_content.split())
+            
+            output_data = (
+                
+                f"Source File: {input_filename}\n"
+                f"Lines Processed: {line_count}\n"
+                f"Words Processed: {word_count}\n"
+                
+                f"{processed_content}"
+            )
+            
+            # Using 'w' mode to write (overwrites existing file)
+            with open(output_filename, 'w', encoding='utf-8') as outfile:
+                outfile.write(output_data)
+            
+            # Success Message (break the loop)
+            print(f"\n SUCCESS: File processed and written to '{output_filename}'.")
+            print("You can run the program again to process another file.")
+            break # Exit the while loop on success
 
-        # 4. Prepare the content for the output file
-        output_data = (
-           f"{uppercase_content}"
-        )
+        # --- Error Handling ---
+        
+        # Handle case where the file does not exist
+        except FileNotFoundError:
+            print(f"ERROR: File not found. The file '{input_filename}' does not exist.")
+            print("Please check the filename and try again.")
+            # Continue the loop to prompt the user again
 
-        # 5. Write the processed text and word count to output.txt
-        with open(output_filename, 'w') as outfile:
-            outfile.write(output_data)
+        # Handle general OS-related IO errors (e.g., permission issues, device full)
+        except IOError as e:
+            print(f"ERROR: An input/output error occurred while reading or writing.")
+            print(f"Details: {e}")
+            # Continue the loop to prompt the user again
+            
+        # Handle any other unexpected errors
+        except Exception as e:
+            print(f" CRITICAL ERROR: An unexpected error occurred.")
+            print(f"Details: {e}")
+            # Continue the loop to prompt the user again
 
-        # 6. Print a success message
-        print(f"Success! Output written to '{output_filename}'.")
-        print(f"Total Words Counted: {word_count}")
 
-    except FileNotFoundError:
-        print(f"\nError: Input file '{input_filename}' not found. Please ensure it is in the same directory.")
-    except Exception as e:
-        print(f"\nAn unexpected error occurred: {e}")
-
-# Execute the main function
 if __name__ == "__main__":
-    process_and_count()
+    file_transformer_lab()
